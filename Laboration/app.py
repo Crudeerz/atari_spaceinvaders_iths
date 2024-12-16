@@ -24,7 +24,7 @@ st.divider()
 # Model overview
 st.write("Here's a quick view of the model that were used for training. The Deep-Q-Network (DQN) is implemented based on the Google Nature Paper from 2015.")
 st.markdown("[The paper can be read here](https://arxiv.org/pdf/1312.5602)")
-st.image("image.png", caption="Deep Q model (DQN) - used for training")
+st.image("Resources/model.png", caption="Deep Q model (DQN) - used for training")
 st.divider()
 
 # Code change section
@@ -65,9 +65,9 @@ st.write("Instead of having to iterate through and appending history information
     
 
 
-st.title("Resultat och grafer")
-arr = np.random.normal(1, 1, size=100)
-fig, ax = plt.subplots()
-ax.hist(arr, bins=20)
+# st.title("Resultat och grafer")
+# arr = np.random.normal(1, 1, size=100)
+# fig, ax = plt.subplots()
+# ax.hist(arr, bins=20)
 
-st.pyplot(fig)
+# st.pyplot(fig)
