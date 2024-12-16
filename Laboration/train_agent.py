@@ -7,6 +7,7 @@ import numpy as np
 import tensorflow as tf
 import ale_py
 from collections import deque
+import datetime
 
 
 gym.register_envs(ale_py)
@@ -84,6 +85,9 @@ epsilon_min = 0.1
 epsilon_max = 1.0
 epsilon_interval = epsilon_max - epsilon_min
 batch_size = 32
+
+start_time = datetime.datetime.now()
+print(f"Starting training at: {start_time}")
 
 while True:
     observation, _ = env.reset()
@@ -165,11 +169,15 @@ while True:
             optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
         if frame_count % update_target_network == 0:
-            # update the the target network with new weights
             model_target.set_weights(model.get_weights())
-            # Log details
-            print(f"best score of last 100: {np.max(episode_reward_history)}, running reward: {running_reward:.2f} at episode {episode_count}, frame count {frame_count}")
-            model.save("breakout_qmodel_{episode_count}.keras")
+            print(f"best score of last 100: {np.max(episode_reward_history)}, running_reward(mean last 100): {running_reward} at episode {episode_count}, frame {frame_count}")
+        # Saving model every 500th episode    
+        if episode_count % 500 == 0:
+            model.save(f"space_qmodel_{episode_count}.keras") 
+        # Print details and time info
+        if frame_count % 10000 == 0:
+            print(f"{frame_count} frames done at {datetime.datetime.now()}, UP-TIME: {datetime.datetime.now() - start_time}")
+            
 
         # Limit the state and reward history
         if len(rewards_history)>max_memory_length:
