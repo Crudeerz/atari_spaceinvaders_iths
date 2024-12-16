@@ -6,46 +6,36 @@ from gymnasium.wrappers.atari_preprocessing import AtariPreprocessing
 import numpy as np
 import tensorflow as tf
 import ale_py
+from collections import deque
+
 
 gym.register_envs(ale_py)
 
-seed = 42
-gamma = 0.99
-epsilon = 1.0
-epsilon_min = 0.1
-epsilon_max = 1.0
-epsilon_interval = (epsilon_max - epsilon_min)
-batch_size = 32
-max_steps_per_episode = 10000
-max_episodes = 0
-max_frames = 1e7
 
-env = gym.make("BreakoutNoFrameskip-v4", render_mode="rgb_array")
-
+render_mode = None
+env = gym.make("SpaceInvadersNoFrameskip-v4", render_mode=render_mode)
 env = AtariPreprocessing(env)
-
 env = FrameStack(env, 4)
-trigger = lambda t: t % 1000 == 0
-env = gym.wrappers.RecordVideo(env, video_folder="./videos", episode_trigger=trigger, disable_logger=True)
 
-num_actions = 4
+num_actions = env.action_space.n
+print(num_actions)
 
+if render_mode == "rgb_array":
+    trigger = lambda t: t % 1000 == 0
+    env = gym.wrappers.RecordVideo(env, video_folder="./videos", episode_trigger=trigger, disable_logger=True)
 
 def create_q_model():
     return keras.Sequential(
-        [
-            layers.Lambda(
-                lambda tensor: keras.ops.transpose(tensor, [0, 2, 3, 1]),
-                output_shape=(84, 84, 4),
-                input_shape=(4, 84, 84)
-            ),
-            layers.Conv2D(32, kernel_size=8, strides=4, activation="relu"),
-            layers.Conv2D(64, kernel_size=4, strides=2, activation="relu"),
-            layers.Conv2D(64, kernel_size=3, strides=1, activation="relu"),
-            layers.Flatten(),
-            layers.Dense(512, activation="relu"),
-            layers.Dense(num_actions, activation="linear")
-        ]
+    [
+        keras.Input(shape=(84,84,4)),
+        layers.Conv2D(32, kernel_size=8, strides=4, activation="relu"),
+        layers.Conv2D(64, kernel_size=4, strides=2, activation="relu"),
+        layers.Conv2D(64, kernel_size=3, strides=1, activation="relu"),
+        layers.Flatten(),
+        layers.Dense(512, activation="relu"),
+        layers.Dense(num_actions, activation="linear")       
+        
+    ]
     )
 
 
@@ -54,35 +44,46 @@ model_target = create_q_model()
 
 optimizer = keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)
 
-# observation, _ = env.reset(seed=42)
-# state = np.array(observation)
-# state_tensor = keras.ops.convert_to_tensor(state)
-# state_tensor = keras.ops.expand_dims(state_tensor, 0)
-# print(state_tensor)
-
-action_history = []
-state_history = []
-state_next_history = []
-rewards_history = []
-done_history = []
-episode_reward_history = []
-running_reward = 0
-episode_count = 0
-frame_count = 0
-
-# Number of frames to take random action and observe output
+# Max episodes to run, set to 0 means runt 'til solved
+max_episodes = 0
+# Max frames to run 
+max_frames = 1e7
+# Frames to take random actions and observe output
 epsilon_random_frames = 50000
 # Number of frames for exploration
-epsilon_greedy_frames = 1000000.0
-# Maximum replay length
-# Note: The Deepmind paper suggests 1000000 however this causes memory issues
-max_memory_length = 1000000
-# Train the model after 4 actions
+epsilon_greedy_frames = 1e6
+# Max length of replay buffer
+max_memory_length = 2e5
+# Abort if more than the below frames are spent in a single game (results in truncated = True)
+max_steps_per_episode = 10000
+# How often should the action-network be updated
 update_after_actions = 4
-# How often to update the target network
+# How often should the Q-network be cloned from our action network?
 update_target_network = 10000
-# Using huber loss for stability
+# Use Huber loss for stability (specifically for Adam)
 loss_function = keras.losses.Huber()
+
+
+maxlen = int(max_memory_length)
+action_history = deque()
+state_history = deque()
+state_next_history = deque()
+rewards_history = deque()
+episode_reward_history = deque(maxlen=100)
+running_reward = []
+done_history = deque()
+episode_count = 0
+train_count = 0
+frame_count = 0
+
+
+
+gamma = 0.99
+epsilon = 1.0
+epsilon_min = 0.1
+epsilon_max = 1.0
+epsilon_interval = epsilon_max - epsilon_min
+batch_size = 32
 
 while True:
     observation, _ = env.reset()
@@ -115,11 +116,12 @@ while True:
         episode_reward += reward
 
         # Save actions and states in replay buffer
-        action_history.append(action)
-        state_history.append(state)
-        state_next_history.append(state_next)
-        done_history.append(done)
-        rewards_history.append(reward)
+        history_logs = [action_history, state_history, state_next_history, rewards_history, done_history]
+        history_entries = [action, state, state_next, reward, done]
+      
+        for entry, log in zip(history_entries, history_logs):
+            log.append(entry)
+
         state = state_next
 
         # Update every fourth frame and once batch size is over 32
@@ -175,32 +177,29 @@ while True:
             model.save("breakout_qmodel_{episode_count}.keras")
 
         # Limit the state and reward history
-        if len(rewards_history) > max_memory_length:
-            del rewards_history[:1]
-            del state_history[:1]
-            del state_next_history[:1]
-            del action_history[:1]
-            del done_history[:1]
+        if len(rewards_history)>max_memory_length:
+            rewards_history.popleft()
+            state_history.popleft()
+            state_next_history.popleft()
+            action_history.popleft()
+            done_history.popleft()
 
         if done:
             break
 
     # Update running reward to check condition for solving
     episode_reward_history.append(episode_reward)
-    if len(episode_reward_history) > 100:
-        del episode_reward_history[:1]
     running_reward = np.mean(episode_reward_history)
 
     episode_count += 1
 
-    if running_reward > 40:  # Condition to consider the task solved
-        print("Solved at episode {}!".format(episode_count))
+    if running_reward > 1000:
+        print(f"Solved at episode {episode_count}!")
+        model.save(f"space_qmodel_solved.keras")
         break
-
-    if (
-        max_episodes > 0 and episode_count >= max_episodes
-    ):  # Maximum number of episodes reached
-        print("Stopped at episode {}!".format(episode_count))
-        break
-    if (max_frames <= frame_count):
+    if (max_episodes > 0 and episode_count >= max_episodes):
+         print(f"Stopped at episode {episode_count}!")
+         break
+    if (max_frames > 0 and frame_count>=max_frames):
         print(f"Stopped at frame {frame_count}!")
+        break
