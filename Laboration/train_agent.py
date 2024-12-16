@@ -12,7 +12,7 @@ from collections import deque
 gym.register_envs(ale_py)
 
 
-render_mode = None
+render_mode = "rgb_array"
 env = gym.make("SpaceInvadersNoFrameskip-v4", render_mode=render_mode)
 env = AtariPreprocessing(env)
 env = FrameStack(env, 4)
@@ -22,7 +22,7 @@ print(num_actions)
 
 if render_mode == "rgb_array":
     trigger = lambda t: t % 1000 == 0
-    env = gym.wrappers.RecordVideo(env, video_folder="./videos", episode_trigger=trigger, disable_logger=True)
+    env = gym.wrappers.RecordVideo(env, video_folder="./Videos", episode_trigger=trigger, disable_logger=True)
 
 def create_q_model():
     return keras.Sequential(
@@ -101,6 +101,7 @@ while True:
             # Predict action Q-values
             # From environment state
             state_tensor = keras.ops.convert_to_tensor(state)
+            state_tensor = keras.ops.transpose(state_tensor, [1,2,0])
             state_tensor = keras.ops.expand_dims(state_tensor, 0)
             action_probs = model(state_tensor, training=False)
             # Take best action
@@ -127,30 +128,24 @@ while True:
         # Update every fourth frame and once batch size is over 32
         if frame_count % update_after_actions == 0 and len(done_history) > batch_size:
             # Get indices of samples for replay buffers
-            indices = np.random.choice(
+            indicies = np.random.choice(
                 range(len(done_history)), size=batch_size)
 
             # Using list comprehension to sample from replay buffer
-            state_sample = np.array([state_history[i] for i in indices])
-            state_next_sample = np.array(
-                [state_next_history[i] for i in indices])
-            rewards_sample = [rewards_history[i] for i in indices]
-            action_sample = [action_history[i] for i in indices]
-            done_sample = keras.ops.convert_to_tensor(
-                [float(done_history[i]) for i in indices]
-            )
+            state_sample = np.moveaxis(np.array([state_history[i] for i in indicies]), 1, -1)
+            state_next_sample = np.moveaxis(np.array([state_next_history[i] for i in indicies]), 1, -1)
+            rewards_sample = [rewards_history[i] for i in indicies]
+            action_sample = [action_history[i] for i in indicies]
+            done_sample = keras.ops.convert_to_tensor([float(done_history[i]) for i in indicies])
 
             # Build the updated Q-values for the sampled future states
             # Use the target model for stability
             future_rewards = model_target.predict(state_next_sample, verbose=0)
             # Q value = reward + discount factor * expected future reward
-            updated_q_values = rewards_sample + gamma * keras.ops.amax(
-                future_rewards, axis=1
-            )
+            updated_q_values = rewards_sample + gamma*keras.ops.amax(future_rewards, axis=1)
 
             # If final frame set the last value to -1
-            updated_q_values = updated_q_values * \
-                (1 - done_sample) - done_sample
+            updated_q_values = updated_q_values * (1 - done_sample - done_sample)
 
             # Create a mask so we only calculate loss on the updated Q-values
             masks = keras.ops.one_hot(action_sample, num_actions)
