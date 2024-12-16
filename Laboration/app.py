@@ -38,13 +38,13 @@ st.write("To get the code working we hade to make sure the shape of the data in 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.write("**Before change**: shape=(32,4,84,84)")
+    st.markdown("**Before change**: shape=:blue[(32,:red[4],84,84)]")
     st.code("""
                 state_sample = np.array([state_history[i] for i in indicies])
             state_next_sample = np.array([state_next_history[i] for i in indicies])
 """)
 with col2:
-    st.write("**After change**: shape=(32,84,84,4)")
+    st.markdown("**After change**: shape=:blue[(32,84,84,:green[4])]")
     st.code("""
                 state_sample = np.moveaxis(np.array([state_history[i] for i in indicies]), 1, -1)
             state_next_sample = np.moveaxis(np.array([state_next_history[i] for i in indicies]), 1, -1)
@@ -53,14 +53,48 @@ with col2:
 
 
 # Small code changes, list -> deque
-st.write("After these changes and other smaller changes as adding functionality for timetracking and saving the modelfile the program runs without errors and exceptions. \
-         So some small optimization changes were made.")
-st.write("Instead of having to iterate through and appending history information to lists Deques were used. \
+st.text("After these changes and other smaller changes as adding functionality for timetracking and backup-saving of the modelfile, the program runs without errors and exceptions. \
+         Furthermore, some small optimization-changes were made.\n \
+         Instead of having to iterate through and appending history information to lists Deques were used. \
          Deques lets you append information to the end of the deque without having to iterate over all indicies before adding data \
-         which improves program-speed")
+         which improves program-speed. After changing lists to Deque(), a for loop was implemented to make it look more neat")
 
 
+col1, col2 = st.columns(2)
 
+with col1:
+    st.markdown("**Before change**:")
+    st.code(""" xxxxxxx_history = []""")
+    st.code("""
+                action_history.append(action)
+        state_history.append(state)
+        state_next_history.append(state_next)
+        done_history.append(done)
+        rewards_history.append(reward)
+""")
+with col2:
+    st.markdown("**After change**:")
+    st.code(""" xxxxxxx_history = Deque()""")
+    st.code("""
+                history_logs = [action_history, state_history, state_next_history, rewards_history, done_history]
+        history_entries = [action, state, state_next, reward, done]
+      
+        for entry, log in zip(history_entries, history_logs):
+            log.append(entry)
+""")
+
+st.divider()
+
+st.header("Gameplay")
+# show agent playing the game
+col1, col2 = st.columns(2)
+
+with col1:
+    st.text("Gameplay from an early training stage: \n Episode 500")
+    st.video("Resources/500.keras_video-episode-0.mp4", autoplay=True, loop=True, muted=True) # Extra *arg (muted) only to generate seperate internal ID for st.video
+with col2:
+    st.text("Gameplay at a later training stage: \n Episode 4535, more than 24h of training")
+    st.video("Resources/4535.keras_video-episode-0.mp4",autoplay=True, loop=True )
 
     
 

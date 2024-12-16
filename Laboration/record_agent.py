@@ -11,7 +11,7 @@ from gymnasium.wrappers.atari_preprocessing import AtariPreprocessing
 gym.register_envs(ale_py)
 
 
-model_file = "../Local/Models/space_qmodel_2177.keras"
+model_file = "../Local/Models/space_qmodel_4535.keras"
 agent = keras.models.load_model(model_file)
 
 env = gym.make("SpaceInvadersNoFrameskip-v4", render_mode="rgb_array")
