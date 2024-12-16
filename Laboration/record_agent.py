@@ -1,5 +1,5 @@
 """
-This script will be used to test the trained model.
+This script is used to record and save the video of a trained agent playing the game.
 """
 
 import keras
@@ -10,12 +10,18 @@ from gymnasium.wrappers.atari_preprocessing import AtariPreprocessing
 
 gym.register_envs(ale_py)
 
-model_file = "< path_to_your_model_here >"
+
+model_file = "../Local/Models/space_qmodel_2177.keras"
 agent = keras.models.load_model(model_file)
 
-env = gym.make("SpaceInvadersNoFrameskip-v4", render_mode="human")
+env = gym.make("SpaceInvadersNoFrameskip-v4", render_mode="rgb_array")
 env = AtariPreprocessing(env)
 env = FrameStack(env, 4)
+
+# prefix the video with episode from modelfile
+prefix = model_file.split("_")[2]
+prefix += "_video"
+env = gym.wrappers.RecordVideo(env, video_folder="./Videos", disable_logger=True, name_prefix=prefix)
 
 state, _ = env.reset()
 done = False
@@ -32,3 +38,5 @@ while not done:
     action = keras.ops.argmax(action_probs[0]).numpy()
 
     state, reward, done, _, _ = env.step(action)
+
+    

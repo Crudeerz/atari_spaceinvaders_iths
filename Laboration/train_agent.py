@@ -8,6 +8,7 @@ import tensorflow as tf
 import ale_py
 from collections import deque
 import datetime
+import pathlib
 
 
 gym.register_envs(ale_py)
@@ -20,6 +21,8 @@ env = FrameStack(env, 4)
 
 num_actions = env.action_space.n
 print(num_actions)
+
+save_model_dir = pathlib.Path("../atari_spaceinvaders_iths/Local/Models/")
 
 if render_mode == "rgb_array":
     trigger = lambda t: t % 1000 == 0
@@ -171,9 +174,9 @@ while True:
         if frame_count % update_target_network == 0:
             model_target.set_weights(model.get_weights())
             print(f"best score of last 100: {np.max(episode_reward_history)}, running_reward(mean last 100): {running_reward} at episode {episode_count}, frame {frame_count}")
-        # Saving model every 500th episode    
-        if episode_count % 500 == 0:
-            model.save(f"space_qmodel_{episode_count}.keras") 
+        # Saving model every 300th episode    
+        if episode_count % 300 == 0:
+            model.save(f"{save_model_dir}/space_qmodel_{episode_count}.keras") #C:\Users\rasmu\Rasmus\VS Code Project\ITHS\atari_spaceinvaders_iths\Local\Models 
         # Print details and time info
         if frame_count % 10000 == 0:
             print(f"{frame_count} frames done at {datetime.datetime.now()}, UP-TIME: {datetime.datetime.now() - start_time}")
@@ -196,7 +199,8 @@ while True:
 
     episode_count += 1
 
-    if running_reward > 1000:
+    # Consider solved if runnig reward exceeds 500
+    if running_reward > 500:
         print(f"Solved at episode {episode_count}!")
         model.save(f"space_qmodel_solved.keras")
         break
