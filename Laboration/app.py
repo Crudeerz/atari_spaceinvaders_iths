@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # Title and intro
-st.title("Spaceinvaders Laboration AI-23")
+st.title("Spaceinvaders Laboration :space_invader:")
 st.write("This app is presenting a laboration made for Deep-Learning Course at ITHS. \
           The assignment was to from a given example, use a Deep-Q-learning, reinforcement learning network to train an agent to play the game Atari- Spaceinvaders")
 st.write("The app will take you through the necessary code-changes that were made to get the script up and running \
@@ -64,7 +64,8 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("**Before change**:")
-    st.code(""" xxxxxxx_history = []""")
+    st.code(""" xxxxxxx_history = []
+    ...""")
     st.code("""
                 action_history.append(action)
         state_history.append(state)
@@ -74,7 +75,9 @@ with col1:
 """)
 with col2:
     st.markdown("**After change**:")
-    st.code(""" xxxxxxx_history = Deque()""")
+    st.code(""" xxxxxxx_history = Deque()
+    ...
+                    """)
     st.code("""
                 history_logs = [action_history, state_history, state_next_history, rewards_history, done_history]
         history_entries = [action, state, state_next, reward, done]
@@ -83,9 +86,37 @@ with col2:
             log.append(entry)
 """)
 
+st.divider() 
+
+st.header("Follow-up and visuals")
+st.write("I had a hard time getting animated pyplots to update simoultaniously as the script was training the model. A test was made to start the matplotlib FuncAnimation \
+         in a sepearte Thread as shown in the code example below but appareantley the Main Thread is default for GUI, at this point I decided to move on and take a different approach... :smile:")
+st.write("*Example from the code showcasing threading when trying to animate plot:*")
+st.code("""
+            import threading
+            import matplotlib.pyplot as plt
+            from matplotlib.animation import FuncAnimation
+        
+            def update():
+                # Function for updating plot
+        
+            def run_animation():
+                 animation = FuncAnimation(fig, update, interval=500)
+                 plt.show()
+
+            # Start animation in seperate Thread
+            animation_thread = threading.Thread(target=run_animation)
+            animation_thread.start()
+""")
+st.text("Instead of FuncAnimation, I saved updated plots every n:th episode so I could manually construct a .gif of all saved plots and proceed with other tasks")
+
+st.image("Resources/plot.gif", caption="")
 st.divider()
 
+# Gameplay section #
+
 st.header("Gameplay")
+st.text("Here is a comparison gameplay between agents playing the game at two different trainingstages")
 # show agent playing the game
 col1, col2 = st.columns(2)
 
@@ -96,11 +127,6 @@ with col2:
     st.text("Gameplay at a later training stage: \n Episode 4535, more than 24h of training")
     st.video("Resources/4535.keras_video-episode-0.mp4",autoplay=True, loop=True )
 
-    
-
-
-# st.title("Resultat och grafer")
-# arr = np.random.normal(1, 1, size=100)
 # fig, ax = plt.subplots()
 # ax.hist(arr, bins=20)
 

@@ -9,12 +9,13 @@ import ale_py
 from collections import deque
 import datetime
 import pathlib
+import matplotlib.pyplot as plt
 
 
 gym.register_envs(ale_py)
 
 
-render_mode = "rgb_array"
+render_mode = None
 env = gym.make("SpaceInvadersNoFrameskip-v4", render_mode=render_mode)
 env = AtariPreprocessing(env)
 env = FrameStack(env, 4)
@@ -22,7 +23,7 @@ env = FrameStack(env, 4)
 num_actions = env.action_space.n
 print(num_actions)
 
-save_model_dir = pathlib.Path("../atari_spaceinvaders_iths/Local/Models/")
+save_model_dir = pathlib.Path("../Local/Models")
 
 if render_mode == "rgb_array":
     trigger = lambda t: t % 1000 == 0
@@ -38,7 +39,6 @@ def create_q_model():
         layers.Flatten(),
         layers.Dense(512, activation="relu"),
         layers.Dense(num_actions, activation="linear")       
-        
     ]
     )
 
@@ -89,12 +89,16 @@ epsilon_max = 1.0
 epsilon_interval = epsilon_max - epsilon_min
 batch_size = 32
 
+yaxis_reward = deque(maxlen=20) # Episode Reward, list for plotting
+xaxis_episodecount = deque(maxlen=20) # Framecount, list for plotting
+
+
 start_time = datetime.datetime.now()
 print(f"Starting training at: {start_time}")
 
 while True:
     observation, _ = env.reset()
-    state = np.array(observation)
+    state = np.asarray(observation)
     episode_reward = 0
 
     for timestep in range(1, max_steps_per_episode):
@@ -119,7 +123,7 @@ while True:
 
         # Apply the sampled action in our environment
         state_next, reward, done, _, _ = env.step(action)
-        state_next = np.array(state_next)
+        state_next = np.asarray(state_next)
 
         episode_reward += reward
 
@@ -176,12 +180,13 @@ while True:
             print(f"best score of last 100: {np.max(episode_reward_history)}, running_reward(mean last 100): {running_reward} at episode {episode_count}, frame {frame_count}")
         # Saving model every 300th episode    
         if episode_count % 300 == 0:
-            model.save(f"{save_model_dir}/space_qmodel_{episode_count}.keras") #C:\Users\rasmu\Rasmus\VS Code Project\ITHS\atari_spaceinvaders_iths\Local\Models 
+            model.save(f"{save_model_dir}\space_qmodel_{episode_count}.keras") #C:\Users\rasmu\Rasmus\VS Code Project\ITHS\atari_spaceinvaders_iths\Local\Models 
         # Print details and time info
         if frame_count % 10000 == 0:
             print(f"{frame_count} frames done at {datetime.datetime.now()}, UP-TIME: {datetime.datetime.now() - start_time}")
             
-
+        
+            
         # Limit the state and reward history
         if len(rewards_history)>max_memory_length:
             rewards_history.popleft()
@@ -189,10 +194,27 @@ while True:
             state_next_history.popleft()
             action_history.popleft()
             done_history.popleft()
-
+        
+        
         if done:
             break
 
+    # Plot and save data every 10th episode       
+    if done and episode_count % 10 == 0:   
+        xaxis_episodecount.append(episode_count)
+        yaxis_reward.append(episode_reward) 
+        x_lim = max(xaxis_episodecount) if xaxis_episodecount else 100
+        y_lim = max(yaxis_reward) if yaxis_reward else 100
+        x_min = min(xaxis_episodecount) if xaxis_episodecount else 0
+        fig, ax = plt.subplots()
+        ax.set_xlim(x_min, x_lim + 1)
+        ax.set_xlabel("Episode")
+        ax.set_ylim(0, y_lim + 50)
+        ax.set_ylabel("Reward")
+        plt.plot(xaxis_episodecount, yaxis_reward)
+        plt.savefig(f"../Local/frame_{frame_count}_ep_{episode_count}.png")
+        plt.close()
+        
     # Update running reward to check condition for solving
     episode_reward_history.append(episode_reward)
     running_reward = np.mean(episode_reward_history)
