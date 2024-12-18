@@ -108,7 +108,7 @@ st.code("""
             animation_thread = threading.Thread(target=run_animation)
             animation_thread.start()
 """)
-st.text("Instead of FuncAnimation, I saved updated plots every n:th episode so I could manually construct a .gif of all saved plots and proceed with other tasks")
+st.text("When defeated, instead of using FuncAnimation, I saved updated plots every n:th episode so I could manually construct a .gif of all saved plots and proceed with other tasks")
 
 st.image("Resources/plot.gif", caption="")
 st.divider()
