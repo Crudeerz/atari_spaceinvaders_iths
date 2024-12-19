@@ -4,14 +4,14 @@ This repo is for laboration at ITHS, training an agent using Deep-Q Reinforcemen
 [Assignment Paper](https://github.com/Crudeerz/atari_spaceinvaders_iths/blob/main/Laboration/Assignment/Laboration_Djupinl%C3%A4rning_HT24.pdf)
 
 ## View project presentation
-The laboration is presented in a small app using streamlit.  
-The app is deployed to stremlit cloud and can be viewed here  
+The laboration is presented using an app created with streamlit.  
+The app is deployed to stremlit cloud and can be viewed here:  
 
-[Streamlit App](https://atarispaceinvadersiths-gbtruuur5cipwykf6mhw7z.streamlit.app/)  
+[Streamlit App](https://atarispaceinvadersiths-gni7z6gpe3xwu836rj67kl.streamlit.app/?target=_blank)  
 
-To run the app locally: 
+If there are issues viewing the app on streamlit cloud, the fastest way to run the app locally is: 
 - Clone this repo
-- Install streamlit using pip
+- If streamlit is not installed, install it using pip
 - Run the app from the directory containing "app.py" 
 
 ```bash
@@ -21,6 +21,7 @@ $ streamlit run app.py
 ```
 
 ## Download the repo and play with the code
+If you want to test and play around with the code, follow the steps below to get it up and running
 
 - Clone this repo 
 - Use pip/pipenv to install requirements (preferably pipenv)
