@@ -25,7 +25,6 @@ num_actions = env.action_space.n
 # Create local folders for model and plot saving
 Path("../Local/Models").mkdir(parents=True, exist_ok=True)
 Path("../Local/Plots/").mkdir(parents=True, exist_ok=True)
-
 save_model_dir = Path("../Local/Models")
 
 if render_mode == "rgb_array":
@@ -48,6 +47,8 @@ def create_q_model():
 
 model = create_q_model()
 model_target = create_q_model()
+
+
 
 optimizer = keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)
 
@@ -96,8 +97,10 @@ yaxis_reward = deque(maxlen=500) # Episode Reward, list for plotting
 xaxis_episodecount = deque(maxlen=500) # Episodecount, list for plotting
 
 
+SAVE_PLOTS = True
 start_time = datetime.datetime.now()
 print(f"Starting training at: {start_time}")
+print(f"Saving of plots enabled: {SAVE_PLOTS}")
 
 while True:
     observation, _ = env.reset()
@@ -208,39 +211,40 @@ while True:
 
     episode_count += 1
 
-    # Plot and save data every 10th episode    
-    if episode_count % 5 == 0: 
-        xaxis_episodecount.append(episode_count)
-        yaxis_reward.append(episode_reward) 
+    if SAVE_PLOTS:
+        # Plot every 5th and save data every 10th episode    
+        if episode_count % 5 == 0: 
+            xaxis_episodecount.append(episode_count)
+            yaxis_reward.append(episode_reward) 
 
-    if episode_count % 10 == 0: 
-        # Plot style settings  
-        x_lim = max(xaxis_episodecount) if xaxis_episodecount else 100
-        y_lim = max(yaxis_reward) if yaxis_reward else 100
-        x_min = min(xaxis_episodecount) if xaxis_episodecount else 0
-        fig, ax = plt.subplots()
-        ax.set_xlim(x_min, x_lim + 1)
-        ax.set_ylim(0, y_lim + 50)
-        ax.set_xlabel("Episode", color="white")
-        ax.set_ylabel("Reward", color="white")
-        fig.set_facecolor("#0E1117")
-        ax.set_facecolor("#0E1117")
-        ax.spines["left"].set_edgecolor("white")
-        ax.spines["bottom"].set_edgecolor("white")
-        ax.tick_params(axis="both", color="white")
-        for label in ax.get_xticklabels():
-            label.set_color('white')
-        for label in ax.get_yticklabels():
-            label.set_color('white')
+        if episode_count % 10 == 0: 
+            # Plot style settings  
+            x_lim = max(xaxis_episodecount) if xaxis_episodecount else 100
+            y_lim = max(yaxis_reward) if yaxis_reward else 100
+            x_min = min(xaxis_episodecount) if xaxis_episodecount else 0
+            fig, ax = plt.subplots()
+            ax.set_xlim(x_min, x_lim + 1)
+            ax.set_ylim(0, y_lim + 50)
+            ax.set_xlabel("Episode", color="white")
+            ax.set_ylabel("Reward", color="white")
+            fig.set_facecolor("#0E1117")
+            ax.set_facecolor("#0E1117")
+            ax.spines["left"].set_edgecolor("white")
+            ax.spines["bottom"].set_edgecolor("white")
+            ax.tick_params(axis="both", color="white")
+            for label in ax.get_xticklabels():
+                label.set_color('white')
+            for label in ax.get_yticklabels():
+                label.set_color('white')
 
-        # Plot
-        plt.tight_layout()
-        plt.axhline(y=np.mean(yaxis_reward), linestyle="--", label=f"Mean last {len(episode_reward_history)}: {running_reward:.2f} ", color="green")    
-        plt.plot(xaxis_episodecount, yaxis_reward, color="blue")
-        plt.legend()
-        ax.legend(facecolor='#0E1117', edgecolor='#0E1117', labelcolor='white')
-        plt.savefig(f"../Local/Plots/frame_{frame_count}_ep_{episode_count}.png")
-        plt.close()
+            # Plot
+            plt.tight_layout()
+            plt.axhline(y=np.mean(yaxis_reward), linestyle="--", label=f"Mean last {len(episode_reward_history)}: {running_reward:.2f} ", color="green")    
+            plt.plot(xaxis_episodecount, yaxis_reward, color="blue")
+            plt.legend()
+            ax.legend(facecolor='#0E1117', edgecolor='#0E1117', labelcolor='white')
+            plt.savefig(f"../Local/Plots/frame_{frame_count}_ep_{episode_count}.png")
+            plt.close()
 
     
 

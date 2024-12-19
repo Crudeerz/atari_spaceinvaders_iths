@@ -32,7 +32,7 @@ $ streamlit run app.py
 ### Run the code
 The python file **"Laboration/train_agent.py"** is the main file that starts the script and trains the agent.   
 When running the script, it starts to train the model and regularly saves modelfiles to a locally created directory: **/Local/Models**  
-It also saves plots using matplotlib every 10th episode to: **/Local/Plots**
+Default, it also saves plots using matplotlib every 10th episode to: **/Local/Plots**, this can be changed using the **"SAVE_PLOTS"** variable.
 
 
 > [!NOTE]
