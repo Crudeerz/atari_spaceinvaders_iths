@@ -1,7 +1,7 @@
 # Spaceinvaders Laboration at ITHS
 This repo is for laboration at ITHS, training an agent using Deep-Q Reinforcement Learning, to play the game Spaceinvaders.
 
-[Assignment Paper](https://github.com/Crudeerz/atari_spaceinvaders_iths/blob/main/Laboration/Assignment/Laboration_Djupinl%C3%A4rning_HT24.pdf?target=_blank)
+[Assignment Paper](https://github.com/Crudeerz/atari_spaceinvaders_iths/blob/main/Laboration/Assignment/Laboration_Djupinl%C3%A4rning_HT24.pdf)
 
 ## View project presentation
 The laboration is presented in a small app using streamlit.  
@@ -26,7 +26,7 @@ $ streamlit run app.py
 - Use pip to install requirements
 
  ```bash 
- $ pip install -r requriements.txt
+ $ pip install -r requriements_all.txt
  ```
 
 ### Run the code
