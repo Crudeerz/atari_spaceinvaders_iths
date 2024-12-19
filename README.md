@@ -40,5 +40,5 @@ It also saves plots using matplotlib every 10th episode to: **/Local/Plots**
 > If you would like to construct a ".gif" from all saved plots in */Local/Plots*, run the program **"Laboration/Resources/make_gif.py"**  
 > By default, this program removes the images from the source directory when the gif has been successfully created.
 
-If you want to test the models that has been saved and record them playing the game, you can run **"Laboration/record_agent.py"**.
-
+If you want to test the models that has been saved and record them playing the game, you can run **"Laboration/record_agent.py"**.  
+Be sure to change the path to which model you want to record.
