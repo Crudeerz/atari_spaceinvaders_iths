@@ -29,10 +29,13 @@ $ streamlit run app.py
  $ pip install -r requriements.txt
  ```
 
-#### Run the code
-The python file **"train_agent.py"** is the main file that starts the script and trains the agent.   
-> [!NOTE]
-> When running the script, it starts to train the model and regurarly saves modelfiles to a locally created directory:- */Local/Models*  
-> It also saves plots using matplotlib every 10th episode to: */Local/Plots*
+### Run the code
+The python file **"Laboration/train_agent.py"** is the main file that starts the script and trains the agent.   
+When running the script, it starts to train the model and regularly saves modelfiles to a locally created directory: **/Local/Models**  
+It also saves plots using matplotlib every 10th episode to: **/Local/Plots**
 
- 
+
+> [!NOTE]
+> The saving of plots is only made for the sake of the streamlit app.
+> If you would like to construct a ".gif" from all saved plots in */Local/Plots*, run the program **"Laboration/Resources/make_gif.py"**  
+> ==By default, this program removes the images from the source directory when the gif has been successfully created.==

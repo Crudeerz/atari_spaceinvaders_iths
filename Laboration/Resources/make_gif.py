@@ -4,7 +4,7 @@ import re
 
 
 
-def create_gif(remove = False):
+def create_gif(remove = True):
     image_folder = "../../Local/Plots"
     save_to_path = "./plot6.gif"
     image_folder_list = os.listdir(image_folder)
