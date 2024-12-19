@@ -1,6 +1,4 @@
 import streamlit as st 
-import matplotlib.pyplot as plt
-import numpy as np
 
 
 magicEnabled = False
@@ -16,9 +14,9 @@ st.set_page_config(
 # Title and intro
 st.title("Spaceinvaders Laboration :space_invader:")
 st.write("This app is presenting a laboration made for Deep-Learning Course at ITHS. \
-          The assignment was to from a given example, use a Deep-Q-learning, reinforcement learning network to train an agent to play the game Atari- Spaceinvaders")
+          The assignment was to from a given example, use a Deep-Q RL network to train an agent to play the game Atari- Spaceinvaders")
 st.write("The app will take you through the necessary code-changes that were made to get the script up and running \
-          and some visuals and results of the agent playing the game")
+          and some visuals and at last a gameplay of the agent playing the game")
 st.divider()
 
 # Model overview
@@ -29,7 +27,7 @@ st.divider()
 
 # Code change section
 st.subheader("Code changes")
-st.write("When running the program for the first time an exception is thrown:")
+st.write("When running the program for the first time an exception was thrown:")
 st.exception(ValueError("Input 0 of layer 'conv2d' is incompatible with the layer: expected axis -1 of input shape to have value 4, but received input with shape (32, 4, 84, 84)"))
 st.write("To get the code working we hade to make sure the shape of the data in the replay buffer matches what the input shape is expecting. To solve this, np.moveaxis was added \
          to rearrange the shape to meet the expected format.")
@@ -53,11 +51,11 @@ with col2:
 
 
 # Small code changes, list -> deque
-st.text("After these changes and other smaller changes as adding functionality for timetracking and backup-saving of the modelfile, the program runs without errors and exceptions. \
-         Furthermore, some small optimization-changes were made.\n \
+st.text("After these changes and some other small changes as adding functionality for timetracking and backup-saving of the modelfile, the program runs without errors and exceptions. \
+         Furthermore, some small optimization-changes were made:\n \
          Instead of having to iterate through and appending history information to lists Deques were used. \
          Deques lets you append information to the end of the deque without having to iterate over all indicies before adding data \
-         which improves program-speed. After changing lists to Deque(), a for loop was implemented to make it look more neat")
+         which improves program-execution. After changing lists to Deque(), a for loop was implemented to make it look more neat")
 
 
 col1, col2 = st.columns(2)
@@ -89,8 +87,8 @@ with col2:
 st.divider() 
 
 st.header("Follow-up and visuals")
-st.write("I had a hard time getting animated pyplots to update simoultaniously as the script was training the model. A test was made to start the matplotlib FuncAnimation \
-         in a sepearte Thread as shown in the code example below but appareantley the Main Thread is default for GUI, at this point I decided to move on and take a different approach... :smile:")
+st.write("I had a hard time getting animated pyplots to update simultaniously as the script was training the model. A test was made to start the matplotlib FuncAnimation \
+         in a sepearte Thread as shown in the code example below but the Main Thread is default for GUI operations, at this point I decided to move on and take a different approach... :smile:")
 st.write("*Example from the code showcasing threading when trying to animate plot:*")
 st.code("""
             import threading
@@ -108,26 +106,25 @@ st.code("""
             animation_thread = threading.Thread(target=run_animation)
             animation_thread.start()
 """)
-st.text("When defeated, instead of using FuncAnimation, I saved updated plots every n:th episode so I could manually construct a .gif of all saved plots and proceed with other tasks")
+st.text("Instead of trying to implement FuncAnimation, I saved updated plots every n:th episode so I could programatically construct a \
+        '.gif' of all saved plots and proceed with other tasks. \n \
+        The first ~200 episodes (100000 frames) the agent is taking random gameplay actions, and from there on using the network to take the best action. \
+        We can see in the plot that the mean score is slowly increasing as we train the agent")
 
-st.image("Resources/plot.gif", caption="")
+st.image("Resources/plot.gif", caption="A plot showing reward increas when model is in training")
 st.divider()
 
 # Gameplay section #
 
 st.header("Gameplay")
-st.text("Here is a comparison gameplay between agents playing the game at two different trainingstages")
+st.text("Finally, a comparison gameplay between the agent playing the game at two different trainingstages, the left one at an early trainingstage where \
+        the model was saved on 500 episodes and the right one with the model saved at 4535 episodes")
 # show agent playing the game
 col1, col2 = st.columns(2)
 
 with col1:
     st.text("Gameplay from an early training stage: \n Episode 500")
-    st.video("Resources/500.keras_video-episode-0.mp4", autoplay=True, loop=True, muted=True) # Extra *arg (muted) only to generate seperate internal ID for st.video
+    st.video("Resources/500.keras_video-episode-0.mp4", autoplay=True, loop=True, muted=True) # Extra *arg (muted) added only to generate seperate internal ID for st.video
 with col2:
     st.text("Gameplay at a later training stage: \n Episode 4535, more than 24h of training")
     st.video("Resources/4535.keras_video-episode-0.mp4",autoplay=True, loop=True )
-
-# fig, ax = plt.subplots()
-# ax.hist(arr, bins=20)
-
-# st.pyplot(fig)

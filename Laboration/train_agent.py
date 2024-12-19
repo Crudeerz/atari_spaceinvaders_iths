@@ -53,7 +53,7 @@ max_episodes = 0
 # Max frames to run 
 max_frames = 1e7
 # Frames to take random actions and observe output
-epsilon_random_frames = 50000
+epsilon_random_frames = 100000
 # Number of frames for exploration
 epsilon_greedy_frames = 1e6
 # Max length of replay buffer
@@ -89,8 +89,8 @@ epsilon_max = 1.0
 epsilon_interval = epsilon_max - epsilon_min
 batch_size = 32
 
-yaxis_reward = deque(maxlen=20) # Episode Reward, list for plotting
-xaxis_episodecount = deque(maxlen=20) # Framecount, list for plotting
+yaxis_reward = deque(maxlen=500) # Episode Reward, list for plotting
+xaxis_episodecount = deque(maxlen=500) # Episodecount, list for plotting
 
 
 start_time = datetime.datetime.now()
@@ -198,28 +198,48 @@ while True:
         
         if done:
             break
-
-    # Plot and save data every 10th episode       
-    if done and episode_count % 10 == 0:   
-        xaxis_episodecount.append(episode_count)
-        yaxis_reward.append(episode_reward) 
-        x_lim = max(xaxis_episodecount) if xaxis_episodecount else 100
-        y_lim = max(yaxis_reward) if yaxis_reward else 100
-        x_min = min(xaxis_episodecount) if xaxis_episodecount else 0
-        fig, ax = plt.subplots()
-        ax.set_xlim(x_min, x_lim + 1)
-        ax.set_xlabel("Episode")
-        ax.set_ylim(0, y_lim + 50)
-        ax.set_ylabel("Reward")
-        plt.plot(xaxis_episodecount, yaxis_reward)
-        plt.savefig(f"../Local/frame_{frame_count}_ep_{episode_count}.png")
-        plt.close()
-        
+    
     # Update running reward to check condition for solving
     episode_reward_history.append(episode_reward)
     running_reward = np.mean(episode_reward_history)
 
     episode_count += 1
+
+    # Plot and save data every 10th episode    
+    if episode_count % 5 == 0: 
+        xaxis_episodecount.append(episode_count)
+        yaxis_reward.append(episode_reward) 
+
+    if episode_count % 10 == 0: 
+        # Plot style settings  
+        x_lim = max(xaxis_episodecount) if xaxis_episodecount else 100
+        y_lim = max(yaxis_reward) if yaxis_reward else 100
+        x_min = min(xaxis_episodecount) if xaxis_episodecount else 0
+        fig, ax = plt.subplots()
+        ax.set_xlim(x_min, x_lim + 1)
+        ax.set_ylim(0, y_lim + 50)
+        ax.set_xlabel("Episode", color="white")
+        ax.set_ylabel("Reward", color="white")
+        fig.set_facecolor("#0E1117")
+        ax.set_facecolor("#0E1117")
+        ax.spines["left"].set_edgecolor("white")
+        ax.spines["bottom"].set_edgecolor("white")
+        ax.tick_params(axis="both", color="white")
+        for label in ax.get_xticklabels():
+            label.set_color('white')
+        for label in ax.get_yticklabels():
+            label.set_color('white')
+
+        # Plot
+        plt.tight_layout()
+        plt.axhline(y=np.mean(yaxis_reward), linestyle="--", label=f"Mean last {len(episode_reward_history)}: {running_reward:.2f} ", color="green")    
+        plt.plot(xaxis_episodecount, yaxis_reward, color="blue")
+        plt.legend()
+        ax.legend(facecolor='#0E1117', edgecolor='#0E1117', labelcolor='white')
+        plt.savefig(f"../Local/Plots/frame_{frame_count}_ep_{episode_count}.png")
+        plt.close()
+
+    
 
     # Consider solved if runnig reward exceeds 500
     if running_reward > 500:
