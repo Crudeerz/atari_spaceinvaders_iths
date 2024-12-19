@@ -8,7 +8,7 @@ import tensorflow as tf
 import ale_py
 from collections import deque
 import datetime
-import pathlib
+from pathlib import Path
 import matplotlib.pyplot as plt
 
 
@@ -21,9 +21,12 @@ env = AtariPreprocessing(env)
 env = FrameStack(env, 4)
 
 num_actions = env.action_space.n
-print(num_actions)
 
-save_model_dir = pathlib.Path("../Local/Models")
+# Create local folders for model and plot saving
+Path("../Local/Models").mkdir(parents=True, exist_ok=True)
+Path("../Local/Plots/").mkdir(parents=True, exist_ok=True)
+
+save_model_dir = Path("../Local/Models")
 
 if render_mode == "rgb_array":
     trigger = lambda t: t % 1000 == 0
