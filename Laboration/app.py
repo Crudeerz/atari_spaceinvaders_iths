@@ -111,7 +111,7 @@ st.text("Instead of trying to implement FuncAnimation, I saved updated plots eve
         The first ~200 episodes (100000 frames) the agent is taking random gameplay actions, and from there on using the network to take the best action. \
         We can see in the plot that the mean score is slowly increasing as we train the agent")
 
-st.image("Resources/plot.gif", caption="A plot showing reward increas when model is in training")
+st.image("Resources/plot.gif", caption="A plot showing reward increase when model is in training")
 st.divider()
 
 # Gameplay section #
