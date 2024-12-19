@@ -32,4 +32,5 @@ $ streamlit run app.py
 
 The python file "train_agent.py" is the main file that starts the script and trains the agent.   
 > [!NOTE]
-> Before running the script, update the paths for model_save and 
+> When running the script, it starts to train the model and saves reguraly modelfiles to a locally created directory.
+>  
