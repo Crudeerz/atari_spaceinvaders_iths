@@ -7,7 +7,7 @@ This repo is for laboration at ITHS, training an agent using Deep-Q Reinforcemen
 The laboration is presented using an app created with streamlit.  
 The app is deployed to stremlit cloud and can be viewed here:  
 
-[Streamlit App](https://atarispaceinvadersiths-gni7z6gpe3xwu836rj67kl.streamlit.app/?target=_blank)  
+<a href="https://atarispaceinvadersiths-gni7z6gpe3xwu836rj67kl.streamlit.app/" target="_blank">Streamlit App</a>
 
 If there are issues viewing the app on streamlit cloud, the fastest way to run the app locally is: 
 - Clone this repo
