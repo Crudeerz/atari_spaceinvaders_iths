@@ -1,7 +1,7 @@
 # Spaceinvaders Laboration at ITHS
 This repo is for laboration at ITHS, training an agent using Deep-Q Reinforcement Learning, to play the game Spaceinvaders.
 
-[Assignment Paper](https://github.com/Crudeerz/atari_spaceinvaders_iths/blob/main/Laboration/Assignment/Laboration_Djupinl%C3%A4rning_HT24.pdf)
+[Assignment Paper](https://github.com/Crudeerz/atari_spaceinvaders_iths/blob/main/Laboration/Assignment/Laboration_Djupinl%C3%A4rning_HT24.pdf?target=_blank)
 
 ## View project presentation
 The laboration is presented in a small app using streamlit.  
