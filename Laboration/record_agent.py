@@ -1,7 +1,3 @@
-"""
-This script is used to record and save the video of a trained agent playing the game.
-"""
-
 import keras
 import gymnasium as gym
 import ale_py
