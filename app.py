@@ -22,7 +22,7 @@ st.divider()
 # Model overview
 st.write("Here's a quick view of the model that were used for training. The Deep-Q-Network (DQN) is implemented based on the Google Nature Paper from 2015.")
 st.markdown("[The paper can be read here](https://arxiv.org/pdf/1312.5602)")
-st.image("Resources/model.png", caption="Deep Q model (DQN) - used for training")
+st.image("Laboration/Resources/model.png", caption="Deep Q model (DQN) - used for training")
 st.divider()
 
 # Code change section
@@ -111,7 +111,7 @@ st.text("Instead of trying to implement FuncAnimation, I saved updated plots eve
         The first ~200 episodes (100000 frames) the agent is taking random gameplay actions, and from there on using the network to take the best action. \
         We can see in the plot that the mean score is slowly increasing as we train the agent")
 
-st.image("Resources/plot.gif", caption="A plot showing reward increase when model is in training")
+st.image("Laboration/Resources/plot.gif", caption="A plot showing reward increase when model is in training")
 st.divider()
 
 # Gameplay section #
@@ -124,7 +124,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.text("Gameplay from an early training stage: \n Episode 500")
-    st.video("Resources/500.keras_video-episode-0.mp4", autoplay=True, loop=True, muted=True) # Extra *arg (muted) added only to generate seperate internal ID for st.video
+    st.video("Laboration/Resources/500.keras_video-episode-0.mp4", autoplay=True, loop=True, muted=True) # Extra *arg (muted) added only to generate seperate internal ID for st.video
 with col2:
     st.text("Gameplay at a later training stage: \n Episode 4535, more than 24h of training")
-    st.video("Resources/4535.keras_video-episode-0.mp4",autoplay=True, loop=True )
+    st.video("Laboration/Resources/4535.keras_video-episode-0.mp4",autoplay=True, loop=True )
