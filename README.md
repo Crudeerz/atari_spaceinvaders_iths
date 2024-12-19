@@ -23,10 +23,10 @@ $ streamlit run app.py
 ## Download the repo and play with the code
 
 - Clone this repo 
-- Use pip to install requirements
+- Use pip/pipenv to install requirements (preferably pipenv)
 
  ```bash 
- $ pip install -r requriements_all.txt
+ $ pipenv install -r requriements.txt
  ```
 
 ### Run the code
